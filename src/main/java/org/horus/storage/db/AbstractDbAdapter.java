@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -33,7 +34,7 @@ public abstract class AbstractDbAdapter {
      * @param rs wrapped result set
      */
     public AbstractDbAdapter(final ResultSet rs) {
-        this.rs = rs;
+        this.rs = requireNonNull(rs, "The result set is mandatory");
     }
 
     /**

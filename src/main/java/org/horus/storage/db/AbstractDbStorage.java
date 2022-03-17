@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @param <K> Key transfer type
  * @param <T> Transfer type to storage
  */
-public abstract class AbstractStorageDb<K, T> implements Storage<K, T> {
+public abstract class AbstractDbStorage<K, T> implements Storage<K, T> {
 
     /**
      * SQL SELECT sentence to know if a key exists
@@ -50,7 +50,7 @@ public abstract class AbstractStorageDb<K, T> implements Storage<K, T> {
     /**
      * Logger
      */
-    private static final Logger LOG = getLogger(AbstractStorageDb.class);
+    private static final Logger LOG = getLogger(AbstractDbStorage.class);
 
     /**
      * Map with a set of SQL sentences

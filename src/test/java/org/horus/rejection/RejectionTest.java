@@ -1,7 +1,5 @@
 package org.horus.rejection;
 
-import org.horus.rejection.Cause;
-import org.horus.rejection.Rejection;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

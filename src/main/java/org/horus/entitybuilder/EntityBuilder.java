@@ -15,6 +15,11 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * Monadic entity builder
+ * @param <E> entity type
+ * @param <T> reception type
+ */
 public abstract class EntityBuilder<E, T> {
 
     private static final Logger LOG = getLogger(EntityBuilder.class);

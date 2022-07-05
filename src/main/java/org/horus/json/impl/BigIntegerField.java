@@ -5,48 +5,50 @@ import org.horus.json.JsonType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class IntegerField extends PresentField {
+import static java.util.Objects.requireNonNull;
 
-    private final int value;
+public class BigIntegerField extends PresentField {
 
-    public IntegerField(int value) {
+    private final BigInteger value;
+
+    public BigIntegerField(BigInteger value) {
         super(JsonType.NUMBER);
-        this.value = value;
+        this.value = requireNonNull(value, "Value is required");
     }
 
     @Override
     public boolean getBoolean() {
-        return value >= 0;
+        return value.signum() == 1;
     }
 
     @Override
     public int getInteger() {
-        return value;
+        return value.intValueExact();
     }
 
     @Override
     public long getLong() {
-        return value;
+        return value.longValueExact();
     }
 
     @Override
     public double getDouble() {
-        return value;
+        return value.doubleValue();
     }
 
     @Override
     public BigInteger getBigInteger() {
-        return BigInteger.valueOf(value);
+        return value;
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        return BigDecimal.valueOf(value);
+        return new BigDecimal(value);
     }
 
     @Override
     public String getString() {
-        return String.valueOf(value);
+        return value.toString();
     }
 
 }

@@ -27,7 +27,7 @@ public class JsonObjectBuilder implements JsonChain {
     }
 
     @Override
-    public JsonChain add(String fieldName, boolean value) {
+    public JsonObjectBuilder add(String fieldName, boolean value) {
         final JsonField field;
 
         checkNullArrayPointer();
@@ -37,105 +37,109 @@ public class JsonObjectBuilder implements JsonChain {
     }
 
     @Override
-    public JsonChain add(String fieldName, int value) {
+    public JsonObjectBuilder add(String fieldName, int value) {
         pointer.tryAdd(fieldName, new IntegerField(value));
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, long value) {
+    public JsonObjectBuilder add(String fieldName, long value) {
+        pointer.tryAdd(fieldName, new LongField(value));
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, double value) {
+    public JsonObjectBuilder add(String fieldName, double value) {
+        pointer.tryAdd(fieldName, new DoubleField(value));
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, BigInteger value) {
+    public JsonObjectBuilder add(String fieldName, BigInteger value) {
+        pointer.tryAdd(fieldName, new BigIntegerField(value));
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, BigDecimal value) {
+    public JsonObjectBuilder add(String fieldName, BigDecimal value) {
+        pointer.tryAdd(fieldName, new BigDecimalField(value));
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, String value) {
+    public JsonObjectBuilder add(String fieldName, String value) {
         return this;
     }
 
     @Override
-    public JsonChain add(String fieldName, JsonObject value) {
+    public JsonObjectBuilder add(String fieldName, JsonObject value) {
         return this;
     }
 
     @Override
-    public JsonChain array(String fieldName) {
+    public JsonObjectBuilder array(String fieldName) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(boolean value) {
+    public JsonObjectBuilder addElement(boolean value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(int value) {
+    public JsonObjectBuilder addElement(int value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(long value) {
+    public JsonObjectBuilder addElement(long value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(double value) {
+    public JsonObjectBuilder addElement(double value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(BigInteger value) {
+    public JsonObjectBuilder addElement(BigInteger value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(BigDecimal value) {
+    public JsonObjectBuilder addElement(BigDecimal value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(String value) {
+    public JsonObjectBuilder addElement(String value) {
         return this;
     }
 
     @Override
-    public JsonChain addElement(JsonObject value) {
+    public JsonObjectBuilder addElement(JsonObject value) {
         return this;
     }
 
     @Override
-    public JsonChain addNull() {
+    public JsonObjectBuilder addNull() {
         checkArrayPointer();
         arrayPointer.add(new NullField());
         return this;
     }
 
     @Override
-    public JsonChain endArray() {
+    public JsonObjectBuilder endArray() {
         return this;
     }
 
     @Override
-    public JsonChain object(String fieldName) {
+    public JsonObjectBuilder object(String fieldName) {
         return this;
     }
 
     @Override
-    public JsonChain endObject() {
+    public JsonObjectBuilder endObject() {
         return this;
     }
 

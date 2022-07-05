@@ -5,11 +5,11 @@ import org.horus.json.JsonType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class IntegerField extends PresentField {
+public class LongField extends PresentField {
 
-    private final int value;
+    private final long value;
 
-    public IntegerField(int value) {
+    public LongField(long value) {
         super(JsonType.NUMBER);
         this.value = value;
     }
@@ -21,7 +21,7 @@ public class IntegerField extends PresentField {
 
     @Override
     public int getInteger() {
-        return value;
+        return Math.toIntExact(value);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class IntegerField extends PresentField {
 
     @Override
     public BigInteger getBigInteger() {
-        return BigInteger.valueOf(value);
+        return BigInteger.valueOf(getInteger());
     }
 
     @Override

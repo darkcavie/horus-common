@@ -7,7 +7,7 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-class JsonArray {
+public class JsonArray {
 
     private final List<AbstractField> array;
 
@@ -15,7 +15,7 @@ class JsonArray {
         array = new ArrayList<>();
     }
 
-    void add(JsonField field) {
+    public void add(JsonField field) {
         requireNonNull(field);
 
     }

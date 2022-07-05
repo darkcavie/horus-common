@@ -6,79 +6,83 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 
-public class FalseField extends AbstractField{
+public class IntegerField extends AbstractField {
 
-    public FalseField() {
-        super(JsonType.BOOLEAN);
+    private final int value;
+
+    public IntegerField(int value) {
+        super(JsonType.NUMBER);
+        this.value = value;
     }
 
     @Override
     public boolean getBoolean() {
-        return false;
+        return value >= 0;
     }
 
     @Override
     public int getInteger() {
-        return 0;
+        return value;
     }
 
     @Override
     public long getLong() {
-        return 0;
+        return value;
     }
 
     @Override
     public double getDouble() {
-        return 0;
+        return value;
     }
 
     @Override
     public BigInteger getBigInteger() {
-        return BigInteger.ZERO;
+        return BigInteger.valueOf(value);
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        return BigDecimal.ZERO;
+        return BigDecimal.valueOf(value);
     }
 
     @Override
     public String getString() {
-        return "false";
+        return String.valueOf(value);
     }
 
     @Override
     public Optional<Boolean> optBoolean() {
-        return Optional.of(false);
+        return Optional.of(getBoolean());
     }
 
     @Override
     public Optional<Integer> optInteger() {
-        return Optional.of(0);
+        return Optional.of(value);
     }
 
     @Override
     public Optional<Long> optLong() {
-        return Optional.of(0L);
+        return Optional.of(getLong());
     }
 
     @Override
     public Optional<Double> optDouble() {
-        return Optional.of(0D);
+        return Optional.of(getDouble());
     }
 
     @Override
     public Optional<BigInteger> optBigInteger() {
-        return Optional.of(BigInteger.ZERO);
+        return Optional.of(getBigInteger());
     }
 
     @Override
     public Optional<BigDecimal> optBigDecimal() {
-        return Optional.of(BigDecimal.ZERO);
+        return Optional.of(getBigDecimal());
     }
 
     @Override
     public Optional<String> optString() {
         return Optional.of(getString());
     }
+
 }

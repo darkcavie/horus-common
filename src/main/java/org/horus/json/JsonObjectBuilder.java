@@ -1,8 +1,6 @@
-package org.horus.json.impl;
+package org.horus.json;
 
-import org.horus.json.JsonChain;
-import org.horus.json.JsonField;
-import org.horus.json.JsonObject;
+import org.horus.json.impl.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -40,6 +38,7 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonChain add(String fieldName, int value) {
+        pointer.tryAdd(fieldName, new IntegerField(value));
         return this;
     }
 

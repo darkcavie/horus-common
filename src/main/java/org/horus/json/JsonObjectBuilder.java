@@ -56,18 +56,35 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder add(String fieldName, BigInteger value) {
-        pointer.tryAdd(fieldName, new BigIntegerField(value));
+        if(value == null) {
+            tryAddNull(fieldName);
+        } else {
+            pointer.tryAdd(fieldName, new BigIntegerField(value));
+        }
         return this;
+    }
+
+    void tryAddNull(String fieldName) {
+        pointer.tryAdd(fieldName, new NullField());
     }
 
     @Override
     public JsonObjectBuilder add(String fieldName, BigDecimal value) {
-        pointer.tryAdd(fieldName, new BigDecimalField(value));
+        if(value == null) {
+            tryAddNull(fieldName);
+        } else {
+            pointer.tryAdd(fieldName, new BigDecimalField(value));
+        }
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String fieldName, String value) {
+        if(value == null) {
+            tryAddNull(fieldName);
+        } else {
+            pointer.tryAdd(fieldName, new StringField(value));
+        }
         return this;
     }
 

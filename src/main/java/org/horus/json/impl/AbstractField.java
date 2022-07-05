@@ -1,5 +1,6 @@
 package org.horus.json.impl;
 
+import org.horus.json.JsonException;
 import org.horus.json.JsonField;
 import org.horus.json.JsonObject;
 import org.horus.json.JsonType;
@@ -10,6 +11,8 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 
 abstract class AbstractField implements JsonField {
+
+    private static final String NOT_A_VALID_MESSAGE = "[%s] is not a valid %s value";
 
     private final JsonType type;
 
@@ -45,6 +48,13 @@ abstract class AbstractField implements JsonField {
     @Override
     public Stream<JsonField> arrayFieldStream() {
         throw new IllegalAccessError("Not a Json array");
+    }
+
+    JsonException notValidTypeValue(String type, String value) {
+        final String fullMessage;
+
+        fullMessage = String.format(NOT_A_VALID_MESSAGE, type, value);
+        return new JsonException(fullMessage);
     }
 
 }

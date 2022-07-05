@@ -23,6 +23,8 @@ class JsonObjectBuilderTest {
 
     private static final String BIG_INTEGER_FIELD = "bigIntegerField";
 
+    private static final String STRING_FIELD = "stringField";
+
     private JsonObjectBuilder builder;
 
     private JsonObject object;
@@ -131,31 +133,41 @@ class JsonObjectBuilderTest {
     }
 
     @Test
+    void addString() {
+        final JsonField field;
+
+        object = builder.add(STRING_FIELD, "content").build();
+        assertNotNull(object);
+        assertTrue(object.isField(STRING_FIELD));
+        assertTrue(object.optField(STRING_FIELD).isPresent());
+        assertTrue(object.optType(STRING_FIELD).isPresent());
+        assertEquals(JsonType.STRING, object.getType(STRING_FIELD));
+        field = object.getField(STRING_FIELD);
+        assertEquals(JsonType.STRING, field.getType());
+        assertEquals("content", field.getString());
+        assertThrows(NumberFormatException.class, field::getInteger);
+    }
+
     void array() {
         fail("Not implemented");
     }
 
-    @Test
     void addElement() {
         fail("Not implemented");
     }
 
-    @Test
     void testAddElement() {
         fail("Not implemented");
     }
 
-    @Test
     void addNull() {
         fail("Not implemented");
     }
 
-    @Test
     void endArray() {
         fail("Not implemented");
     }
 
-    @Test
     void testObject() {
         fail("Not implemented");
     }

@@ -94,6 +94,12 @@ public class JsonObjectBuilder implements JsonChain {
     }
 
     @Override
+    public JsonObjectBuilder addNull(String fieldName) {
+        pointer.tryAdd(fieldName, new NullField());
+        return this;
+    }
+
+    @Override
     public JsonObjectBuilder array(String fieldName) {
         return this;
     }

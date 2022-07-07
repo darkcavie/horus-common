@@ -200,6 +200,13 @@ class JsonObjectBuilderTest {
         assertFalse(object.getBoolean("falseField"));
     }
 
+    @Test
+    void addNullNamed() {
+        object = builder.addNull("nullField").build();
+        assertNotNull(object);
+        assertNotNull(object.getField("nullField"));
+    }
+
     void array() {
         fail("Not implemented");
     }

@@ -8,15 +8,11 @@ import org.horus.json.JsonType;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class JsonObjectImpl implements JsonObject {
 
     private static final String NOT_SUCH_FIELD = "Not such field %s";
-
-    private static final String NOT_SUCH_FIELD_OF_TYPE = "Not such field %s of type %s";
 
     private final Map<String, JsonField> fieldMap;
 
@@ -69,6 +65,11 @@ public class JsonObjectImpl implements JsonObject {
     }
 
     @Override
+    public Stream<JsonField> arrayStream(String fieldName) {
+        return null;
+    }
+
+    @Override
     public JsonObject getJsonObject(String fieldName) {
         final FilterHelper filterHelper;
 
@@ -110,32 +111,6 @@ public class JsonObjectImpl implements JsonObject {
 
     public Optional<JsonObjectImpl> optPrevious() {
         return Optional.ofNullable(previous);
-    }
-
-    private static class FilterHelper implements Predicate<JsonField>, Supplier<JsonException> {
-
-        private final String fieldName;
-
-        private final JsonType jsonType;
-
-        private FilterHelper(String fieldName, JsonType jsonType) {
-            this.fieldName = fieldName;
-            this.jsonType = jsonType;
-        }
-
-        @Override
-        public boolean test(JsonField jsonField) {
-            return this.jsonType.equals(jsonField.getType());
-        }
-
-        @Override
-        public JsonException get() {
-            final String fullMessage;
-
-            fullMessage = String.format(NOT_SUCH_FIELD_OF_TYPE, fieldName, jsonType.name().toLowerCase());
-            return new JsonException(fullMessage);
-        }
-
     }
 
 }

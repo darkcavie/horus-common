@@ -17,6 +17,8 @@ public interface JsonObject {
 
     Stream<String> nameStream();
 
+    Stream<JsonField> arrayStream(String fieldName);
+
     JsonObject getJsonObject(String fieldName);
 
     String getString(String fieldName);

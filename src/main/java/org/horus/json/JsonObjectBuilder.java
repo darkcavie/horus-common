@@ -89,11 +89,6 @@ public class JsonObjectBuilder implements JsonChain {
     }
 
     @Override
-    public JsonObjectBuilder add(String fieldName, JsonObject value) {
-        return this;
-    }
-
-    @Override
     public JsonObjectBuilder addNull(String fieldName) {
         pointer.tryAdd(fieldName, new NullField());
         return this;
@@ -101,6 +96,15 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder array(String fieldName) {
+        final JsonArray jsonArray;
+
+        if(arrayPointer == null) {
+            jsonArray = new JsonArray();
+            pointer.tryAdd(fieldName, new JsonArrayField(jsonArray));
+            arrayPointer = jsonArray;
+        } else {
+            throw new IllegalStateException("Already opened array");
+        }
         return this;
     }
 
@@ -153,6 +157,10 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder endArray() {
+        if(arrayPointer == null) {
+            throw new IllegalStateException("Not current array");
+        }
+        arrayPointer = null;
         return this;
     }
 
@@ -169,7 +177,7 @@ public class JsonObjectBuilder implements JsonChain {
     @Override
     public JsonObjectBuilder endObject() {
         if(pointer == radix) {
-            throw new JsonException("In the radix object");
+            throw new IllegalStateException("In the radix object");
         }
         pointer = pointer.optPrevious().orElseThrow();
         return this;

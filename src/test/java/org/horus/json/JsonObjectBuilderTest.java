@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -175,7 +176,7 @@ class JsonObjectBuilderTest {
 
     @Test
     void prematuringClosingObject() {
-        assertThrows(JsonException.class, builder::endObject);
+        assertThrows(IllegalStateException.class, builder::endObject);
     }
 
     @Test
@@ -207,8 +208,19 @@ class JsonObjectBuilderTest {
         assertNotNull(object.getField("nullField"));
     }
 
+    @Test
     void array() {
-        fail("Not implemented");
+        final Stream<JsonField> fieldStream;
+        object = builder.array("arrayField").endArray().build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream("arrayField");
+        assertNotNull(fieldStream);
+        assertTrue(fieldStream.findFirst().isEmpty());
+    }
+
+    @Test
+    void arrayPrematurallyClosed() {
+        assertThrows(IllegalStateException.class, builder.array("arrayField")::build);
     }
 
     void addElement() {

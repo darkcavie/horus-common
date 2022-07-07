@@ -19,8 +19,6 @@ public interface JsonChain {
 
     JsonChain add(String fieldName, String value);
 
-    JsonChain add(String fieldName, JsonObject value);
-
     JsonChain addNull(String fieldName);
 
     JsonChain array(String fieldName);

@@ -66,7 +66,13 @@ public class JsonObjectImpl implements JsonObject {
 
     @Override
     public Stream<JsonField> arrayStream(String fieldName) {
-        return null;
+        final FilterHelper filterHelper;
+
+        filterHelper = new FilterHelper(fieldName, JsonType.ARRAY);
+        return optField(fieldName)
+                .filter(filterHelper)
+                .map(JsonField::arrayFieldStream)
+                .orElseThrow(filterHelper);
     }
 
     @Override

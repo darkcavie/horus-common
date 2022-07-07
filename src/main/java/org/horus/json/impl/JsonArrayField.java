@@ -1,69 +1,68 @@
 package org.horus.json.impl;
 
 import org.horus.json.JsonException;
-import org.horus.json.JsonObject;
+import org.horus.json.JsonField;
 import org.horus.json.JsonType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static java.util.Objects.requireNonNull;
+public class JsonArrayField extends AbstractField {
 
-public class JsonObjectField extends AbstractField {
+    private static final String BUT_AN_ARRAY = "Not a %s but an array";
 
-    private final String BUT_AN_OBJECT = "Not a %s but an object";
+    private JsonArray value;
 
-    private final JsonObject value;
-
-    public JsonObjectField(JsonObject value) {
-        super(JsonType.OBJECT);
-        this.value = requireNonNull(value, "Object value is mandatory");
+    public JsonArrayField(JsonArray value) {
+        super(JsonType.ARRAY);
+        this.value = value;
     }
 
     @Override
-    public JsonObject getJsonObject() {
-        return value;
+    public Stream<JsonField> arrayFieldStream() {
+        return value.stream();
     }
 
     @Override
     public boolean getBoolean() {
-        return true;
+        return false;
     }
 
     @Override
     public int getInteger() {
-        throw butAnObjectException("integer");
+        throw butAnArrayException("integer");
     }
 
-    private JsonException butAnObjectException(String type) {
-        final String message = String.format(BUT_AN_OBJECT, type);
+    private JsonException butAnArrayException(String type) {
+        final String message = String.format(BUT_AN_ARRAY, type);
         return new JsonException(message);
     }
 
     @Override
     public long getLong() {
-        throw butAnObjectException("long");
+        throw butAnArrayException("long");
     }
 
     @Override
     public double getDouble() {
-        throw butAnObjectException("double");
+        throw butAnArrayException("double");
     }
 
     @Override
     public BigInteger getBigInteger() {
-        throw butAnObjectException("big integer");
+        throw butAnArrayException("big integer");
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        throw butAnObjectException("big decimal");
+        throw butAnArrayException("big decimal");
     }
 
     @Override
     public String getString() {
-        throw butAnObjectException("string");
+        throw butAnArrayException("string");
     }
 
     @Override

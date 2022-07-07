@@ -1,69 +1,70 @@
 package org.horus.json.impl;
 
-import org.horus.json.JsonField;
+import org.horus.json.JsonException;
 import org.horus.json.JsonObject;
 import org.horus.json.JsonType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-public class NullField implements JsonField {
+import static java.util.Objects.requireNonNull;
 
-    @Override
-    public boolean isNull() {
-        return true;
-    }
+public class JsonObjectField extends AbstractField {
 
-    @Override
-    public JsonType getType() {
-        throw new IllegalStateException("No type");
-    }
+    private final String BUT_AN_OBJECT = "Not a %s but an object";
 
-    @Override
-    public boolean isFieldOfType(JsonType type) {
-        return false;
-    }
+    private final JsonObject value;
 
-    @Override
-    public boolean getBoolean() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public int getInteger() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public long getLong() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public double getDouble() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public BigInteger getBigInteger() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public BigDecimal getBigDecimal() {
-        throw throwNoValue();
-    }
-
-    @Override
-    public String getString() {
-        throw throwNoValue();
+    public JsonObjectField(JsonObject value) {
+        super(JsonType.OBJECT);
+        this.value = requireNonNull(value, "Object value is mandatory");
     }
 
     @Override
     public JsonObject getJsonObject() {
-        throw throwNoValue();
+        return value;
+    }
+
+
+    @Override
+    public boolean getBoolean() {
+        return true;
+    }
+
+    @Override
+    public int getInteger() {
+        throw buildException("integer");
+    }
+
+    JsonException buildException(String type) {
+        final String message = String.format(BUT_AN_OBJECT, type);
+        return new JsonException(message);
+    }
+
+    @Override
+    public long getLong() {
+        throw buildException("long");
+    }
+
+    @Override
+    public double getDouble() {
+        throw buildException("double");
+    }
+
+    @Override
+    public BigInteger getBigInteger() {
+        throw buildException("big integer");
+    }
+
+    @Override
+    public BigDecimal getBigDecimal() {
+        throw buildException("big decimal");
+    }
+
+    @Override
+    public String getString() {
+        throw buildException("string");
     }
 
     @Override
@@ -99,20 +100,6 @@ public class NullField implements JsonField {
     @Override
     public Optional<String> optString() {
         return Optional.empty();
-    }
-
-    @Override
-    public Optional<JsonObject> optJson() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Stream<JsonField> arrayFieldStream() {
-        throw throwNoValue();
-    }
-
-    private IllegalStateException throwNoValue() {
-        return new IllegalStateException("No value");
     }
 
 }

@@ -27,7 +27,7 @@ public interface JsonField {
 
     String getString();
 
-    JsonObject getJson();
+    JsonObject getJsonObject();
 
     Optional<Boolean> optBoolean();
 

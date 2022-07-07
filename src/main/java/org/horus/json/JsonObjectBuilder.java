@@ -9,7 +9,7 @@ public class JsonObjectBuilder implements JsonChain {
 
     private final JsonObjectImpl radix;
 
-    private final JsonObjectImpl pointer;
+    private JsonObjectImpl pointer;
 
     private JsonArray arrayPointer;
 
@@ -152,11 +152,20 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder object(String fieldName) {
+        final JsonObjectImpl otherObject;
+
+        otherObject = new JsonObjectImpl(pointer);
+        pointer.tryAdd(fieldName, new JsonObjectField(otherObject));
+        pointer = otherObject;
         return this;
     }
 
     @Override
     public JsonObjectBuilder endObject() {
+        if(pointer == radix) {
+            throw new JsonException("In the radix object");
+        }
+        pointer = pointer.optPrevious().orElseThrow();
         return this;
     }
 

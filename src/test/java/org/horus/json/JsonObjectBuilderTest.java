@@ -25,6 +25,8 @@ class JsonObjectBuilderTest {
 
     private static final String STRING_FIELD = "stringField";
 
+    private static final String OBJECT_FIELD = "objectField";
+
     private JsonObjectBuilder builder;
 
     private JsonObject object;
@@ -146,6 +148,56 @@ class JsonObjectBuilderTest {
         assertEquals(JsonType.STRING, field.getType());
         assertEquals("content", field.getString());
         assertThrows(NumberFormatException.class, field::getInteger);
+    }
+
+    @Test
+    void object() {
+        final JsonField field;
+        final JsonObject jsonObject;
+
+        object = builder.object(OBJECT_FIELD).endObject().build();
+        assertNotNull(object);
+        assertTrue(object.isField(OBJECT_FIELD));
+        assertTrue(object.optField(OBJECT_FIELD).isPresent());
+        assertTrue(object.optType(OBJECT_FIELD).isPresent());
+        assertEquals(JsonType.OBJECT, object.getType(OBJECT_FIELD));
+        field = object.getField(OBJECT_FIELD);
+        assertNotNull(field);
+        assertEquals(JsonType.OBJECT, field.getType());
+        jsonObject = field.getJsonObject();
+        assertNotNull(jsonObject);
+    }
+
+    @Test
+    void notClosedObject() {
+        assertThrows(IllegalStateException.class, builder.object(OBJECT_FIELD)::build);
+    }
+
+    @Test
+    void prematuringClosingObject() {
+        assertThrows(JsonException.class, builder::endObject);
+    }
+
+    @Test
+    void chainedObjects() {
+        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, "content").endObject().build();
+        assertNotNull(object);
+        assertEquals("content", object.getField(OBJECT_FIELD).getJsonObject().getField(STRING_FIELD).getString());
+    }
+
+    @Test
+    void resumedChainedObjects() {
+        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, "content").endObject().build();
+        assertNotNull(object);
+        assertEquals("content", object.getJsonObject(OBJECT_FIELD).getString(STRING_FIELD));
+    }
+
+    @Test
+    void addBoolean() {
+        object = builder.add("trueField", true).add("falseField", false).build();
+        assertNotNull(object);
+        assertTrue(object.getBoolean("trueField"));
+        assertFalse(object.getBoolean("falseField"));
     }
 
     void array() {

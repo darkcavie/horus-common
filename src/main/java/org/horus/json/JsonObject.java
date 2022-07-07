@@ -17,4 +17,10 @@ public interface JsonObject {
 
     Stream<String> nameStream();
 
+    JsonObject getJsonObject(String fieldName);
+
+    String getString(String fieldName);
+
+    boolean getBoolean(String fieldName);
+
 }

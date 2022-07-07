@@ -36,7 +36,7 @@ abstract class AbstractField implements JsonField {
     }
 
     @Override
-    public JsonObject getJson() {
+    public JsonObject getJsonObject() {
         throw new IllegalAccessError("Not a Json object");
     }
 

@@ -1,13 +1,29 @@
 package org.horus.json;
 
-import org.horus.json.impl.*;
+import org.horus.json.impl.BigDecimalField;
+import org.horus.json.impl.BigIntegerField;
+import org.horus.json.impl.DoubleField;
+import org.horus.json.impl.FalseField;
+import org.horus.json.impl.IntegerField;
+import org.horus.json.impl.JsonArray;
+import org.horus.json.impl.JsonArrayField;
+import org.horus.json.impl.JsonObjectField;
+import org.horus.json.impl.JsonObjectImpl;
+import org.horus.json.impl.LongField;
+import org.horus.json.impl.NullField;
+import org.horus.json.impl.StringField;
+import org.horus.json.impl.TrueField;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class JsonObjectBuilder implements JsonChain {
 
     private final JsonObjectImpl radix;
+
+    private final Deque<Object> stack;
 
     private JsonObjectImpl pointer;
 
@@ -15,22 +31,29 @@ public class JsonObjectBuilder implements JsonChain {
 
     public JsonObjectBuilder() {
         radix = new JsonObjectImpl();
+        stack = new ArrayDeque<>();
         pointer = radix;
     }
 
     public JsonObject build() {
-        checkNullArrayPointer();
+        checkPointingObject();
         if(pointer != radix) {
             throw new IllegalStateException("Not closed object");
         }
         return radix;
     }
 
+    void checkPointingObject() {
+        if(pointer == null) {
+            throw new IllegalStateException("Pointing to array");
+        }
+    }
+
     @Override
     public JsonObjectBuilder add(String fieldName, boolean value) {
         final JsonField field;
 
-        checkNullArrayPointer();
+        checkPointingObject();
         field = value ? new TrueField() : new FalseField();
         pointer.tryAdd(fieldName, field);
         return this;
@@ -38,24 +61,28 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder add(String fieldName, int value) {
+        checkPointingObject();
         pointer.tryAdd(fieldName, new IntegerField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String fieldName, long value) {
+        checkPointingObject();
         pointer.tryAdd(fieldName, new LongField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String fieldName, double value) {
+        checkPointingObject();
         pointer.tryAdd(fieldName, new DoubleField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder add(String fieldName, BigInteger value) {
+        checkPointingObject();
         if(value == null) {
             tryAddNull(fieldName);
         } else {
@@ -70,6 +97,7 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder add(String fieldName, BigDecimal value) {
+        checkPointingObject();
         if(value == null) {
             tryAddNull(fieldName);
         } else {
@@ -80,6 +108,7 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder add(String fieldName, String value) {
+        checkPointingObject();
         if(value == null) {
             tryAddNull(fieldName);
         } else {
@@ -90,87 +119,142 @@ public class JsonObjectBuilder implements JsonChain {
 
     @Override
     public JsonObjectBuilder addNull(String fieldName) {
+        checkPointingObject();
         pointer.tryAdd(fieldName, new NullField());
         return this;
     }
 
     @Override
     public JsonObjectBuilder array(String fieldName) {
-        final JsonArray jsonArray;
-
-        if(arrayPointer == null) {
-            jsonArray = new JsonArray();
-            pointer.tryAdd(fieldName, new JsonArrayField(jsonArray));
-            arrayPointer = jsonArray;
-        } else {
-            throw new IllegalStateException("Already opened array");
-        }
+        checkPointingObject();
+        arrayPointer = new JsonArray();
+        pointer.tryAdd(fieldName, new JsonArrayField(arrayPointer));
+        stack.addFirst(pointer);
+        pointer = null;
         return this;
     }
 
     @Override
     public JsonObjectBuilder addElement(boolean value) {
+        checkPointingArray();
+        arrayPointer.add(value ? new TrueField() : new FalseField());
         return this;
+    }
+
+    void checkPointingArray() {
+        if(arrayPointer == null) {
+            throw new IllegalStateException("Pointing to object");
+        }
     }
 
     @Override
     public JsonObjectBuilder addElement(int value) {
+        checkPointingArray();
+        arrayPointer.add(new IntegerField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder addElement(long value) {
+        checkPointingArray();
+        arrayPointer.add(new LongField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder addElement(double value) {
+        checkPointingArray();
+        arrayPointer.add(new DoubleField(value));
         return this;
     }
 
     @Override
     public JsonObjectBuilder addElement(BigInteger value) {
+        checkPointingArray();
+        if(value == null) {
+            tryAddNullElement();
+        } else {
+            arrayPointer.add(new BigIntegerField(value));
+        }
         return this;
+    }
+
+    void tryAddNullElement() {
+        arrayPointer.add(new NullField());
     }
 
     @Override
     public JsonObjectBuilder addElement(BigDecimal value) {
+        checkPointingArray();
+        if(value == null) {
+            tryAddNullElement();
+        } else {
+            arrayPointer.add(new BigDecimalField(value));
+        }
         return this;
     }
 
     @Override
     public JsonObjectBuilder addElement(String value) {
+        checkPointingArray();
+        if(value == null) {
+            tryAddNullElement();
+        } else {
+            arrayPointer.add(new StringField(value));
+        }
         return this;
     }
 
     @Override
-    public JsonObjectBuilder addElement(JsonObject value) {
+    public JsonObjectBuilder addArray() {
+        final JsonArray newArray;
+
+        checkPointingArray();
+        newArray = new JsonArray();
+        arrayPointer.add(new JsonArrayField(newArray));
+        stack.addFirst(arrayPointer);
+        arrayPointer = newArray;
         return this;
     }
 
     @Override
     public JsonObjectBuilder addNull() {
-        checkArrayPointer();
-        arrayPointer.add(new NullField());
+        checkPointingArray();
+        tryAddNullElement();
         return this;
     }
 
     @Override
     public JsonObjectBuilder endArray() {
-        if(arrayPointer == null) {
-            throw new IllegalStateException("Not current array");
-        }
-        arrayPointer = null;
+        checkPointingArray();
+        pull();
         return this;
+    }
+
+    void pull() {
+        final Object pulled;
+
+        pulled = stack.pop();
+        if(pulled instanceof JsonObjectImpl) {
+            pointer = (JsonObjectImpl) pulled;
+            arrayPointer = null;
+            return;
+        }
+        if(pulled instanceof JsonArray) {
+            arrayPointer = (JsonArray) pulled;
+            pointer = null;
+        }
     }
 
     @Override
     public JsonObjectBuilder object(String fieldName) {
-        final JsonObjectImpl otherObject;
+        final JsonObjectImpl newObject;
 
-        otherObject = new JsonObjectImpl(pointer);
-        pointer.tryAdd(fieldName, new JsonObjectField(otherObject));
-        pointer = otherObject;
+        checkPointingObject();
+        stack.addFirst(pointer);
+        newObject = new JsonObjectImpl();
+        pointer.tryAdd(fieldName, new JsonObjectField(newObject));
+        pointer = newObject;
         return this;
     }
 
@@ -179,21 +263,9 @@ public class JsonObjectBuilder implements JsonChain {
         if(pointer == radix) {
             throw new IllegalStateException("In the radix object");
         }
-        pointer = pointer.optPrevious().orElseThrow();
+        checkPointingObject();
+        pull();
         return this;
     }
-
-    private void checkNullArrayPointer() {
-        if(arrayPointer != null) {
-            throw new IllegalStateException("Not closed array");
-        }
-    }
-
-    private void checkArrayPointer() {
-        if(arrayPointer == null) {
-            throw new IllegalStateException("Not opened array");
-        }
-    }
-
 
 }

@@ -1,14 +1,18 @@
 package org.horus.json.impl;
 
 import org.horus.json.JsonType;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class StringField extends AbstractField {
+
+    private static final Logger LOG = getLogger(StringField.class);
 
     private final String value;
 
@@ -19,32 +23,33 @@ public class StringField extends AbstractField {
 
     @Override
     public boolean getBoolean() {
-        return optBoolean().orElseThrow(() -> notValidTypeValue("boolean", value));
+        return optBoolean()
+                .orElseThrow(() -> notValidTypeValue("boolean", value));
     }
 
     @Override
     public int getInteger() {
-        return optInteger().orElseThrow(() -> notValidTypeValue("integer", value));
+        return Integer.parseInt(value);
     }
 
     @Override
     public long getLong() {
-        return optLong().orElseThrow(() -> notValidTypeValue("long", value));
+        return Long.parseLong(value);
     }
 
     @Override
     public double getDouble() {
-        return optDouble().orElseThrow(() -> notValidTypeValue("double", value));
+        return Double.parseDouble(value);
     }
 
     @Override
     public BigInteger getBigInteger() {
-        return optBigInteger().orElseThrow(() -> notValidTypeValue("big integer", value));
+        return new BigInteger(value);
     }
 
     @Override
     public BigDecimal getBigDecimal() {
-        return optBigDecimal().orElseThrow(() -> notValidTypeValue("big decimal", value));
+        return new BigDecimal(value);
     }
 
     @Override
@@ -54,43 +59,71 @@ public class StringField extends AbstractField {
 
     @Override
     public Optional<Boolean> optBoolean() {
-        return Optional.of(value)
-                .map(Boolean::valueOf);
+        switch(value) {
+            case "true": return Optional.of(true);
+            case "false": return Optional.of(false);
+            default: return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Integer> optInteger() {
-        return Optional.of(value)
-                .map(Integer::valueOf);
+        try {
+            return Optional.of(value)
+                    .map(Integer::valueOf);
+        } catch(NumberFormatException ex) {
+            LOG.warn("The value [{}] is not a valid integer", value, ex);
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Long> optLong() {
-        return Optional.of(value)
-                .map(Long::valueOf);
+        try {
+            return Optional.of(value)
+                    .map(Long::valueOf);
+        } catch(NumberFormatException ex) {
+            LOG.warn("The value [{}] is not a valid long", value, ex);
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Double> optDouble() {
-        return Optional.of(value)
-                .map(Double::valueOf);
+        try {
+            return Optional.of(value)
+                    .map(Double::valueOf);
+        } catch(NumberFormatException ex) {
+            LOG.warn("The value [{}] is not a valid double", value, ex);
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<BigInteger> optBigInteger() {
-        return Optional.of(value)
-                .map(BigInteger::new);
+        try {
+            return Optional.of(value)
+                    .map(BigInteger::new);
+        } catch(NumberFormatException ex) {
+            LOG.warn("The value [{}] is not a valid big integer", value, ex);
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<BigDecimal> optBigDecimal() {
-        return Optional.of(value)
-                .map(BigDecimal::new);
+        try {
+            return Optional.ofNullable(value)
+                    .map(BigDecimal::new);
+        } catch(NumberFormatException ex)  {
+            LOG.warn("The value [{}] is not a valid big decimal", value, ex);
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<String> optString() {
-        return Optional.of(value);
+        return Optional.ofNullable(value);
     }
 
 }

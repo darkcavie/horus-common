@@ -16,15 +16,8 @@ public class JsonObjectImpl implements JsonObject {
 
     private final Map<String, JsonField> fieldMap;
 
-    private final JsonObjectImpl previous;
-
-    public JsonObjectImpl(JsonObjectImpl previous) {
-        fieldMap = new ConcurrentHashMap<>();
-        this.previous = previous;
-    }
-
     public JsonObjectImpl() {
-        this(null);
+        fieldMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -113,10 +106,6 @@ public class JsonObjectImpl implements JsonObject {
             throw new IllegalStateException("The field already exists");
         }
         fieldMap.put(fieldName, field);
-    }
-
-    public Optional<JsonObjectImpl> optPrevious() {
-        return Optional.ofNullable(previous);
     }
 
 }

@@ -37,7 +37,7 @@ public interface JsonChain {
 
     JsonChain addElement(String value);
 
-    JsonChain addElement(JsonObject value);
+    JsonChain addArray();
 
     JsonChain addNull();
 

@@ -18,7 +18,7 @@ public class NullField implements JsonField {
 
     @Override
     public JsonType getType() {
-        throw new IllegalStateException("No type");
+        return null;
     }
 
     @Override

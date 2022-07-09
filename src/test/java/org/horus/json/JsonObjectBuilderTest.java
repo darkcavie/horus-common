@@ -28,6 +28,16 @@ class JsonObjectBuilderTest {
 
     private static final String OBJECT_FIELD = "objectField";
 
+    public static final String CONTENT_VALUE = "content";
+
+    public static final String TRUE_FIELD = "trueField";
+
+    public static final String FALSE_FIELD = "falseField";
+
+    public static final String NULL_FIELD = "nullField";
+
+    public static final String ARRAY_FIELD = "arrayField";
+
     private JsonObjectBuilder builder;
 
     private JsonObject object;
@@ -181,66 +191,225 @@ class JsonObjectBuilderTest {
 
     @Test
     void chainedObjects() {
-        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, "content").endObject().build();
+        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, CONTENT_VALUE).endObject().build();
         assertNotNull(object);
-        assertEquals("content", object.getField(OBJECT_FIELD).getJsonObject().getField(STRING_FIELD).getString());
+        assertEquals(CONTENT_VALUE, object.getField(OBJECT_FIELD).getJsonObject().getField(STRING_FIELD).getString());
     }
 
     @Test
     void resumedChainedObjects() {
-        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, "content").endObject().build();
+        object = builder.object(OBJECT_FIELD).add(STRING_FIELD, CONTENT_VALUE).endObject().build();
         assertNotNull(object);
-        assertEquals("content", object.getJsonObject(OBJECT_FIELD).getString(STRING_FIELD));
+        assertEquals(CONTENT_VALUE, object.getJsonObject(OBJECT_FIELD).getString(STRING_FIELD));
     }
 
     @Test
     void addBoolean() {
-        object = builder.add("trueField", true).add("falseField", false).build();
+        object = builder.add(TRUE_FIELD, true).add(FALSE_FIELD, false).build();
         assertNotNull(object);
-        assertTrue(object.getBoolean("trueField"));
-        assertFalse(object.getBoolean("falseField"));
+        assertTrue(object.getBoolean(TRUE_FIELD));
+        assertFalse(object.getBoolean(FALSE_FIELD));
     }
 
     @Test
     void addNullNamed() {
-        object = builder.addNull("nullField").build();
+        object = builder.addNull(NULL_FIELD).build();
         assertNotNull(object);
-        assertNotNull(object.getField("nullField"));
+        assertNotNull(object.getField(NULL_FIELD));
     }
 
     @Test
     void array() {
         final Stream<JsonField> fieldStream;
-        object = builder.array("arrayField").endArray().build();
+        object = builder.array(ARRAY_FIELD).endArray().build();
         assertNotNull(object);
-        fieldStream = object.arrayStream("arrayField");
+        fieldStream = object.arrayStream(ARRAY_FIELD);
         assertNotNull(fieldStream);
         assertTrue(fieldStream.findFirst().isEmpty());
     }
 
     @Test
     void arrayPrematurallyClosed() {
-        assertThrows(IllegalStateException.class, builder.array("arrayField")::build);
+        assertThrows(IllegalStateException.class, builder.array(ARRAY_FIELD)::build);
     }
 
-    void addElement() {
-        fail("Not implemented");
+    @Test
+    void addElementString() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD).addElement(CONTENT_VALUE).endArray().build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getString)
+                .ifPresentOrElse(x -> assertEquals(CONTENT_VALUE, x), () -> fail("Must value content"));
     }
 
-    void testAddElement() {
-        fail("Not implemented");
+    @Test
+    void addElementInteger() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD).addElement(1).endArray().build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getInteger)
+                .ifPresentOrElse(i -> assertEquals(1, i), () -> fail("Must value 1"));
     }
 
+    @Test
+    void addElementLong() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD).addElement(1L).endArray().build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getLong)
+                .ifPresentOrElse(i -> assertEquals(1L, i), () -> fail("Must value 1 long"));
+    }
+
+    @Test
+    void addElementDouble() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD)
+                .addElement(1.0)
+                .endArray()
+                .build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getDouble)
+                .ifPresentOrElse(i -> assertEquals(1.0, i), () -> fail("Must value 1.0 long"));
+    }
+
+    @Test
+    void addElementBigDecimal() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD)
+                .addElement(BigDecimal.ONE)
+                .endArray()
+                .build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getBigDecimal)
+                .ifPresentOrElse(b -> assertEquals(BigDecimal.ONE, b), () -> fail("Must value 1 big decimal"));
+    }
+
+    @Test
+    void addElementBigInteger() {
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD)
+                .addElement(BigInteger.TEN)
+                .endArray()
+                .build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst()
+                .map(JsonField::getBigInteger)
+                .ifPresentOrElse(b -> assertEquals(BigInteger.TEN, b), () -> fail("Must value 1 big integer"));
+    }
+
+    @Test
     void addNull() {
-        fail("Not implemented");
+        final Stream<JsonField> fieldStream;
+
+        object = builder.array(ARRAY_FIELD).addNull().endArray().build();
+        assertNotNull(object);
+        fieldStream = object.arrayStream(ARRAY_FIELD);
+        assertNotNull(fieldStream);
+        fieldStream.findFirst().ifPresentOrElse(n -> assertTrue(n.isNull()), () -> fail("Must be a null"));
     }
 
+    @Test
     void endArray() {
-        fail("Not implemented");
+        assertThrows(IllegalStateException.class, builder::endArray);
     }
 
-    void testObject() {
-        fail("Not implemented");
+    @Test
+    void arrayPostArray() {
+        object = builder.array(ARRAY_FIELD)
+                .addArray()
+                .endArray()
+                .endArray()
+                .build();
+        assertNotNull(object);
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(a -> assertTrue(a.arrayFieldStream()
+                        .findFirst()
+                        .isEmpty()), () -> fail("One array must exist"));
+    }
+
+    @Test
+    void addNullString() {
+        final String nullValue = null;
+        object = builder.add(STRING_FIELD, nullValue).build();
+        assertTrue(object.getField(STRING_FIELD).isNull());
+    }
+
+    @Test
+    void addNullBigInteger() {
+        final BigInteger nullValue = null;
+        object = builder.add(BIG_INTEGER_FIELD, nullValue).build();
+        assertTrue(object.getField(BIG_INTEGER_FIELD).isNull());
+    }
+
+    @Test
+    void addNullBigDecimal() {
+        final BigDecimal nullValue = null;
+        object = builder.add(BIG_DECIMAL_FIELD, nullValue).build();
+        assertTrue(object.getField(BIG_DECIMAL_FIELD).isNull());
+    }
+
+    @Test
+    void addElementTrue() {
+        object = builder.array(ARRAY_FIELD).addElement(true).endArray().build();
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(f -> assertTrue(f.getBoolean()), () -> fail("Must be true"));
+    }
+
+    @Test
+    void addElementFalse() {
+        object = builder.array(ARRAY_FIELD).addElement(false).endArray().build();
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(f -> assertFalse(f.getBoolean()), () -> fail("Must be false"));
+    }
+
+    @Test
+    void addElementStringNull() {
+        object = builder.array(ARRAY_FIELD).addElement((String) null).endArray().build();
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(f -> assertTrue(f.isNull()), () -> fail("Must be Null"));
+    }
+
+    @Test
+    void addElementBigIntegerNull() {
+        object = builder.array(ARRAY_FIELD).addElement((BigInteger) null).endArray().build();
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(f -> assertTrue(f.isNull()), () -> fail("Must be Null"));
+    }
+
+    @Test
+    void addElementBigDecimalNull() {
+        object = builder.array(ARRAY_FIELD).addElement((BigDecimal) null).endArray().build();
+        object.arrayStream(ARRAY_FIELD)
+                .findFirst()
+                .ifPresentOrElse(f -> assertTrue(f.isNull()), () -> fail("Must be Null"));
     }
 
 }

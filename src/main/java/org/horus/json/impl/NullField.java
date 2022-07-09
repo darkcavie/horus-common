@@ -102,7 +102,7 @@ public class NullField implements JsonField {
     }
 
     @Override
-    public Optional<JsonObject> optJson() {
+    public Optional<JsonObject> optJsonObject() {
         return Optional.empty();
     }
 

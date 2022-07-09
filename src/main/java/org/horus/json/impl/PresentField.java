@@ -46,4 +46,5 @@ abstract class PresentField extends AbstractField {
     public Optional<String> optString() {
         return Optional.of(getString());
     }
+
 }

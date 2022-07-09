@@ -16,7 +16,7 @@ public class LongField extends PresentField {
 
     @Override
     public boolean getBoolean() {
-        return value >= 0;
+        return value > 0;
     }
 
     @Override

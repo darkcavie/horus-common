@@ -43,7 +43,7 @@ public interface JsonField {
 
     Optional<String> optString();
 
-    Optional<JsonObject> optJson();
+    Optional<JsonObject> optJsonObject();
 
     Stream<JsonField> arrayFieldStream();
 

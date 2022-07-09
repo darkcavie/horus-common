@@ -6,8 +6,4 @@ public class JsonException extends RuntimeException {
         super(message);
     }
 
-    public JsonException(String message, Throwable exception) {
-        super(message, exception);
-    }
-
 }

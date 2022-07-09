@@ -19,5 +19,5 @@ class JsonObjectImplTest {
         assertDoesNotThrow(() -> impl.tryAdd("fieldName", new TrueField()));
         assertThrows(IllegalStateException.class, () -> impl.tryAdd("fieldName", new FalseField()));
     }
-    
+
 }

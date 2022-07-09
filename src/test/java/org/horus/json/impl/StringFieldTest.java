@@ -68,4 +68,44 @@ class StringFieldTest {
                 .ifPresentOrElse(i -> assertEquals(1, i), () -> fail("Must value 1"));
     }
 
+    @Test
+    void optLong() {
+        assertFalse(new StringField("content")
+                .optLong()
+                .isPresent());
+        new StringField("1")
+                .optLong()
+                .ifPresentOrElse(i -> assertEquals(1L, i), () -> fail("Must value 1"));
+    }
+
+    @Test
+    void optDouble() {
+        assertFalse(new StringField("content")
+                .optDouble()
+                .isPresent());
+        new StringField("1")
+                .optDouble()
+                .ifPresentOrElse(i -> assertEquals(1.0, i), () -> fail("Must value 1"));
+    }
+
+    @Test
+    void optBigInteger() {
+        assertFalse(new StringField("content")
+                .optBigInteger()
+                .isPresent());
+        new StringField("1")
+                .optBigInteger()
+                .ifPresentOrElse(i -> assertEquals(BigInteger.ONE, i), () -> fail("Must value 1"));
+    }
+
+    @Test
+    void optBigDecimal() {
+        assertFalse(new StringField("content")
+                .optBigDecimal()
+                .isPresent());
+        new StringField("1")
+                .optBigDecimal()
+                .ifPresentOrElse(i -> assertEquals(BigDecimal.ONE, i), () -> fail("Must value 1"));
+    }
+
 }
